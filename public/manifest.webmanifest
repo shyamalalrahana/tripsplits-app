@@ -1,0 +1,13 @@
+{
+  "name": "TripSplits",
+  "short_name": "TripSplits",
+  "description": "Split trip expenses, invite friends, and settle with UPI QR payments.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1020",
+  "theme_color": "#0B1020",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

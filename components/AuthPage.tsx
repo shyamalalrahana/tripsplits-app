@@ -383,29 +383,34 @@ export function AuthPage() {
             </button>
           </div>
 
-          {/* Or divider */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              margin: "18px 0 16px",
-            }}
-          >
+          {/* Or continue with divider — matches design exactly */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "18px 0 16px" }}>
             <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
-            <span
-              style={{
-                color: "var(--fg-3)",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: ".12em",
-                textTransform: "uppercase",
-                fontFamily: "var(--font-display)",
-              }}
-            >
-              Or
+            <span style={{ color: "var(--fg-3)", fontSize: 11, fontWeight: 600, letterSpacing: ".12em", textTransform: "uppercase", fontFamily: "var(--font-display)" }}>
+              Or continue with
             </span>
             <span style={{ flex: 1, height: 1, background: "var(--line)" }} />
+          </div>
+
+          {/* Social buttons — Google + Apple grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {/* Google */}
+            <button type="button" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "13px 16px", borderRadius: 999, background: "var(--glass)", color: "var(--fg-1)", border: "1px solid var(--line)", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14, cursor: "pointer", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+              <svg width="16" height="16" viewBox="0 0 18 18" style={{ display: "block" }}>
+                <path d="M17.6 9.2c0-.6-.05-1.18-.15-1.73H9v3.28h4.84a4.14 4.14 0 0 1-1.8 2.7v2.26h2.9c1.7-1.56 2.66-3.86 2.66-6.5Z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.95v2.34A9 9 0 0 0 9 18Z" fill="#34A853"/>
+                <path d="M3.95 10.7A5.4 5.4 0 0 1 3.66 9c0-.6.1-1.17.29-1.7V4.96H.95A9 9 0 0 0 0 9c0 1.45.35 2.83.95 4.04l3-2.34Z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .95 4.96l3 2.34C4.66 5.17 6.65 3.58 9 3.58Z" fill="#EA4335"/>
+              </svg>
+              Google
+            </button>
+            {/* Apple */}
+            <button type="button" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "13px 16px", borderRadius: 999, background: "var(--glass)", color: "var(--fg-1)", border: "1px solid var(--line)", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14, cursor: "pointer", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ display: "block" }}>
+                <path d="M17.05 12.04c-.03-2.8 2.29-4.16 2.39-4.22-1.3-1.9-3.32-2.16-4.04-2.19-1.72-.17-3.36 1.01-4.23 1.01-.88 0-2.22-.99-3.65-.96-1.88.03-3.61 1.09-4.58 2.77-1.95 3.39-.5 8.4 1.4 11.16.93 1.35 2.04 2.86 3.49 2.81 1.4-.05 1.93-.91 3.62-.91 1.69 0 2.16.91 3.64.88 1.5-.03 2.45-1.37 3.37-2.73 1.06-1.57 1.5-3.09 1.52-3.17-.03-.01-2.92-1.12-2.93-4.45ZM14.5 3.96c.77-.93 1.28-2.22 1.14-3.5-1.1.05-2.43.73-3.22 1.66-.71.82-1.32 2.14-1.16 3.4 1.23.1 2.48-.62 3.24-1.56Z"/>
+              </svg>
+              Apple
+            </button>
           </div>
 
           {/* Switch mode link */}

@@ -99,10 +99,67 @@ export function TripDashboardPage({ tripId }: { tripId: string }) {
 
   return (
     <>
-      {/* Kicker + name */}
-      <div>
-        <div className="kicker">{trip.destination || "Your trip"}</div>
-        <h1 style={{ marginTop: 4 }}>{trip.name}</h1>
+      {/* ── Cover Art — exactly matches TripHeroScreen CoverArt ── */}
+      <div style={{ position: "relative", borderRadius: 32, overflow: "hidden", marginBottom: 0, isolation: "isolate" }}>
+        {/* Aurora gradient background */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, #1A2240 0%, #2A6CFF 40%, #B57BFF 70%, #FF6BC9 100%)" }}>
+          {/* Sun glow */}
+          <div style={{ position: "absolute", top: 38, right: 50, width: 64, height: 64, borderRadius: 999, background: "radial-gradient(circle, #FFC55B 0%, #FF8A5B 60%, transparent 75%)", filter: "blur(2px)" }} />
+          {/* Mountain silhouettes */}
+          <svg viewBox="0 0 360 240" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+            <path d="M0 165 L60 110 L100 140 L150 80 L210 130 L260 100 L320 145 L360 130 L360 240 L0 240Z" fill="rgba(5,7,13,.45)" />
+            <path d="M0 195 L40 165 L90 185 L140 150 L200 180 L250 160 L300 185 L360 170 L360 240 L0 240Z" fill="rgba(5,7,13,.7)" />
+            {/* Palm tree */}
+            <g transform="translate(40 180)" fill="rgba(5,7,13,.85)">
+              <rect x="14" y="0" width="3" height="40" rx="1.5" />
+              <path d="M15 6 q-18 -10 -22 -22 q14 -2 24 12 Z" />
+              <path d="M16 6 q18 -10 22 -22 q-14 -2 -24 12 Z" />
+              <path d="M15 4 q-22 -2 -28 10 q14 8 28 -4 Z" />
+            </g>
+          </svg>
+        </div>
+        {/* Fade overlay */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(5,7,13,.2) 0%, rgba(5,7,13,.4) 50%, rgba(5,7,13,.92) 100%)" }} />
+        {/* Content over cover */}
+        <div style={{ position: "relative", padding: "16px 18px 18px", display: "flex", flexDirection: "column", gap: 8, minHeight: 240 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              padding: "5px 10px", borderRadius: 999,
+              background: "var(--glass-strong)", border: "1px solid rgba(255,255,255,.16)",
+              backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+              fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11,
+              letterSpacing: ".14em", textTransform: "uppercase", color: "var(--fg-1)",
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: "var(--accent-green)", boxShadow: "0 0 8px #3DE1B1" }} />
+              Active
+            </span>
+            <div style={{ color: "var(--fg-1)", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13 }}>
+              {members.length} travellers
+            </div>
+          </div>
+          <div style={{ flex: 1 }} />
+          {trip.destination && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--fg-2)", fontSize: 12, fontWeight: 500 }}>
+              📍 {trip.destination}
+            </div>
+          )}
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: 36, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 0.98, color: "var(--fg-1)", margin: "2px 0 4px" }}>
+            {trip.name}
+          </h1>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              {members.slice(0, 4).map((m) => (
+                <div key={m.id} style={{ width: 28, height: 28, borderRadius: 999, background: m.avatar_color ? `linear-gradient(135deg, ${m.avatar_color}, #B57BFF)` : "linear-gradient(135deg, #5B8CFF, #B57BFF)", display: "grid", placeItems: "center", fontSize: 11, fontWeight: 700, color: "#05070D", boxShadow: "0 0 0 2px #0B1020", fontFamily: "var(--font-display)" }}>
+                  {(m.name || "?")[0].toUpperCase()}
+                </div>
+              ))}
+            </div>
+            <span style={{ color: "var(--fg-2)", fontSize: 12, fontWeight: 500 }}>
+              {expenses.length} expenses
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Aurora hero balance */}

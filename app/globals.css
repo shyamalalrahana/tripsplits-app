@@ -218,8 +218,30 @@
 .tripsplit-canvas input, .tripsplit-canvas select, .tripsplit-canvas textarea { font-family: var(--font-display); }
 
 /* ── Layout ── */
-.shell { display: flex; flex-direction: column; min-height: 100vh; }
-.page { flex: 1; max-width: 960px; margin: 0 auto; padding: 20px 20px 140px; display: flex; flex-direction: column; gap: 16px; width: 100%; }
+.shell { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
+.page { flex: 1; max-width: 960px; margin: 0 auto; padding: 20px 20px 140px; display: flex; flex-direction: column; gap: 16px; width: 100%; position: relative; z-index: 1; }
+
+/* ── Stage background blobs (from design StageBlobs component) ── */
+.stageBlobs {
+  position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0;
+}
+.stageBlobs::before {
+  content: "";
+  position: absolute; top: -120px; left: -80px; width: 320px; height: 320px;
+  background: radial-gradient(circle, rgba(91,140,255,.55), transparent 70%);
+  filter: blur(20px);
+}
+.stageBlobs::after {
+  content: "";
+  position: absolute; bottom: -160px; right: -100px; width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(181,123,255,.45), transparent 70%);
+  filter: blur(20px);
+}
+.stageBlobPink {
+  position: absolute; top: 180px; right: -60px; width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(255,107,201,.32), transparent 70%);
+  filter: blur(20px); pointer-events: none;
+}
 
 /* ── Topbar ── */
 .topbar {

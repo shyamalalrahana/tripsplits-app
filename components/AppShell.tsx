@@ -40,15 +40,19 @@ export function AppShell({
   const navItems = tripId
     ? [
         { href: `/trips/${tripId}`, label: "Trip", icon: WalletCards },
-        { href: `/trips/${tripId}/members`, label: "Members", icon: Users },
+        { href: `/trips/${tripId}/expenses`, label: "Activity", icon: ReceiptText },
         { href: `/trips/${tripId}/expenses/new`, label: "Add", icon: Plus, isAdd: true },
         { href: `/trips/${tripId}/balances`, label: "Balances", icon: Scale },
-        { href: `/trips/${tripId}/settlements`, label: "Settle", icon: ReceiptText },
+        { href: `/trips/${tripId}/settlements`, label: "Settle", icon: Users },
       ]
     : [];
 
   return (
     <div className="shell">
+      {/* Background atmosphere blobs — matches StageBlobs from design */}
+      <div className="stageBlobs" aria-hidden="true">
+        <div className="stageBlobPink" />
+      </div>
       <header className="topbar">
         <Link href="/" className="brand" style={{ textDecoration: "none" }}>
           <div className="brandMark">✈️</div>

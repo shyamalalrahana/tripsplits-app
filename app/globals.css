@@ -539,3 +539,30 @@
 /* ── Progress ring ── */
 .progressRing { position: relative; }
 .progressRingLabel { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 13px; }
+
+/* ── Settlement expanded panel ── */
+.settlePayPanel {
+  padding: 18px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+}
+
+/* ── Stat counter row (in settle hero) ── */
+.settleStatRow { display: flex; gap: 0; padding-top: 16px; margin-top: 16px; border-top: 1px solid rgba(255,255,255,.08); }
+.settleStat { flex: 1; }
+.settleStat + .settleStat { border-left: 1px solid rgba(255,255,255,.08); padding-left: 16px; margin-left: 16px; }
+.settleStatNum { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; }
+.settleStatLabel { font-family: var(--font-display); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--fg-3); margin-top: 4px; }
+
+/* ── Date group header ── */
+.dateGroup { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--fg-3); padding: 14px 4px 10px; display: flex; align-items: center; gap: 10px; }
+.dateGroupLine { flex: 1; height: 1px; background: var(--glass); }
+.dateGroupTotal { color: var(--fg-2); letter-spacing: 0; text-transform: none; font-variant-numeric: tabular-nums; }
+
+/* ── Profile header card ── */
+.profileHeroCard { position: relative; overflow: hidden; border-radius: 32px; padding: 26px 22px 22px; background: var(--g-aurora); background-size: 200% 200%; animation: ts-gradient-pan 14s linear infinite; color: #05070D; box-shadow: var(--shadow-3); }
+.profileHeroCard::before { content: ""; position: absolute; inset: 0; background: radial-gradient(80% 60% at 100% 0%, rgba(255,255,255,.32), transparent 60%); pointer-events: none; }
+
+/* ── Overlapping avatars ── */
+.avatarPair { display: flex; align-items: center; }
+.avatarPair > * + * { margin-left: -10px; }

@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, CreditCard, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { AvatarView } from "@/components/AvatarView";
 import { LoadingCard } from "@/components/LoadingCard";
@@ -24,11 +23,34 @@ type MergedSettlement = {
   confirmed_at: string | null;
 };
 
+function FakeQR() {
+  const cells: boolean[] = [];
+  for (let i = 0; i < 144; i++) cells.push(((i * 1103515245 + 12345) >> 8) % 7 < 3);
+  const isFinder = (x: number, y: number) => (x < 3 && y < 3) || (x > 8 && y < 3) || (x < 3 && y > 8);
+  return (
+    <svg viewBox="0 0 12 12" width="94" height="94">
+      {cells.map((on, i) => {
+        const x = i % 12, y = Math.floor(i / 12);
+        if (isFinder(x, y)) return null;
+        return on ? <rect key={i} x={x + 0.1} y={y + 0.1} width="0.8" height="0.8" fill="#05070D" rx="0.15" /> : null;
+      })}
+      {([[0, 0], [9, 0], [0, 9]] as [number, number][]).map(([x, y]) => (
+        <g key={`${x},${y}`}>
+          <rect x={x} y={y} width="3" height="3" fill="#05070D" rx="0.5" />
+          <rect x={x + 0.5} y={y + 0.5} width="2" height="2" fill="white" rx="0.3" />
+          <rect x={x + 1} y={y + 1} width="1" height="1" fill="#05070D" rx="0.15" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 export function SettlementsPage({ tripId }: { tripId: string }) {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [members, setMembers] = useState<TripMember[]>([]);
   const [settlements, setSettlements] = useState<MergedSettlement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   async function loadAll() {
     const [tripRes, membersRes, expensesRes, settlementsRes] = await Promise.all([
@@ -101,67 +123,70 @@ export function SettlementsPage({ tripId }: { tripId: string }) {
 
   return (
     <>
-      <h1>Settle up</h1>
-
-      {/* Hero summary */}
+      {/* Hero glass card */}
       <div
-        className="card"
         style={{
           background:
             "linear-gradient(135deg, rgba(91,140,255,.18), rgba(181,123,255,.12) 60%, rgba(255,107,201,.10))",
-          borderColor: "rgba(91,140,255,.22)",
+          border: "1px solid rgba(91,140,255,.22)",
+          borderRadius: 28,
+          padding: 20,
+          backdropFilter: "blur(24px) saturate(140%)",
+          WebkitBackdropFilter: "blur(24px) saturate(140%)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,.08), 0 24px 60px -20px rgba(0,0,0,.55)",
+          marginBottom: 16,
         }}
       >
-        <div className="kicker" style={{ color: "var(--accent-blue)", marginBottom: 6 }}>
+        <div
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: 10.5,
+            fontWeight: 700,
+            letterSpacing: ".18em",
+            textTransform: "uppercase",
+            color: "var(--accent-blue)",
+          }}
+        >
           Smart payment plan
         </div>
         <div
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 700,
-            fontSize: 22,
+            fontSize: 28,
             letterSpacing: "-0.02em",
             color: "var(--fg-1)",
-            lineHeight: 1.1,
+            marginTop: 6,
+            lineHeight: 1.05,
           }}
         >
           {totalCount === 0
             ? "Everyone is settled!"
             : `${totalCount} payment${totalCount !== 1 ? "s" : ""}, and everyone's square`}
         </div>
-        <div style={{ display: "flex", gap: 16, marginTop: 16, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,.08)" }}>
+        <div
+          style={{
+            color: "var(--fg-2)",
+            fontSize: 13,
+            fontWeight: 500,
+            marginTop: 8,
+            lineHeight: 1.5,
+          }}
+        >
+          Scan to pay with any UPI app. Confirmation is manual for now.
+        </div>
+
+        {/* Stat counters */}
+        <div className="settleStatRow">
           {[
-            { n: totalCount, l: "Total", tone: "fg-1" },
+            { n: totalCount, l: "Total", color: "var(--fg-1)" },
             { n: settledCount, l: "Settled", color: "var(--accent-green)" },
             { n: waitingCount, l: "Waiting", color: "var(--accent-yellow)" },
             { n: pendingCount, l: "To pay", color: "var(--accent-orange)" },
           ].map(({ n, l, color }) => (
-            <div key={l} style={{ flex: 1 }}>
-              <div
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 700,
-                  fontSize: 22,
-                  color: color || "var(--fg-1)",
-                  lineHeight: 1,
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {n}
-              </div>
-              <div
-                style={{
-                  color: "var(--fg-3)",
-                  fontSize: 10.5,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: ".12em",
-                  marginTop: 4,
-                  fontFamily: "var(--font-display)",
-                }}
-              >
-                {l}
-              </div>
+            <div key={l} className="settleStat">
+              <div className="settleStatNum" style={{ color }}>{n}</div>
+              <div className="settleStatLabel">{l}</div>
             </div>
           ))}
         </div>
@@ -175,7 +200,7 @@ export function SettlementsPage({ tripId }: { tripId: string }) {
           <p className="muted">No payments needed.</p>
         </div>
       ) : (
-        <div className="grid">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {settlements.map((s, i) => {
             const from = members.find((m) => m.id === s.from_member_id);
             const to = members.find((m) => m.id === s.to_member_id);
@@ -190,109 +215,167 @@ export function SettlementsPage({ tripId }: { tripId: string }) {
                 ? "Settled"
                 : s.status === "paid_by_sender"
                 ? "Waiting"
-                : "Pending";
+                : "Open";
+            const isExpanded = expandedId === i;
 
             return (
-              <div key={i} className="card">
-                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-                  <div style={{ position: "relative", display: "flex" }}>
-                    <AvatarView name={from?.name || "?"} color={from?.avatar_color} size={36} />
-                    <div style={{ marginLeft: -10, zIndex: 2 }}>
+              <div
+                key={i}
+                style={{
+                  background: "linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03))",
+                  border: "1px solid rgba(255,255,255,.08)",
+                  borderRadius: 22,
+                  overflow: "hidden",
+                  backdropFilter: "blur(24px) saturate(140%)",
+                  WebkitBackdropFilter: "blur(24px) saturate(140%)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,.08), 0 24px 60px -20px rgba(0,0,0,.55)",
+                }}
+              >
+                {/* Collapsed header — always visible */}
+                <div
+                  onClick={() => setExpandedId(isExpanded ? null : i)}
+                  style={{ padding: "16px 18px", cursor: "pointer" }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    {/* Overlapping avatars */}
+                    <div className="avatarPair">
+                      <AvatarView name={from?.name || "?"} color={from?.avatar_color} size={36} />
                       <AvatarView name={to?.name || "?"} color={to?.avatar_color} size={36} />
                     </div>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        fontWeight: 600,
-                        fontSize: 14,
-                        color: "var(--fg-1)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                      }}
-                    >
-                      {from?.name || "?"} <ArrowRight size={14} strokeWidth={1.6} /> {to?.name || "?"}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontWeight: 600,
+                          fontSize: 14,
+                          color: "var(--fg-1)",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        {from?.name || "?"}{" "}
+                        <ArrowRight size={14} strokeWidth={1.6} />{" "}
+                        {to?.name || "?"}
+                      </div>
+                      <div style={{ color: "var(--fg-2)", fontSize: 11.5, fontWeight: 500, marginTop: 2 }}>
+                        {to?.name || "?"} should receive
+                      </div>
                     </div>
-                    <div style={{ color: "var(--fg-2)", fontSize: 12, fontWeight: 500, marginTop: 2 }}>
-                      {to?.name || "?"} should receive
+                    <div style={{ textAlign: "right" }}>
+                      <div
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontWeight: 700,
+                          fontSize: 18,
+                          color: "var(--fg-1)",
+                          fontVariantNumeric: "tabular-nums",
+                          letterSpacing: "-0.01em",
+                        }}
+                      >
+                        {formatMoney(s.amount, currency)}
+                      </div>
+                      <span className={`chip ${tone}`} style={{ marginTop: 4, fontSize: 10, padding: "3px 8px" }}>
+                        {statusLabel}
+                      </span>
                     </div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        fontWeight: 700,
-                        fontSize: 18,
-                        color: "var(--fg-1)",
-                        fontVariantNumeric: "tabular-nums",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {formatMoney(s.amount, currency)}
-                    </div>
-                    <span className={`chip ${tone}`} style={{ marginTop: 4, fontSize: 10, padding: "3px 8px" }}>
-                      {statusLabel}
-                    </span>
                   </div>
                 </div>
 
-                {/* UPI / actions */}
-                {to?.upi_id && (
-                  <div
-                    style={{
-                      padding: "12px 0 0",
-                      borderTop: "1px solid var(--line)",
-                      marginBottom: 12,
-                    }}
-                  >
-                    <div className="kicker" style={{ marginBottom: 4 }}>Pay to UPI</div>
-                    <div className="mono" style={{ fontSize: 13, color: "var(--fg-2)" }}>
-                      {to.upi_id}
-                    </div>
-                  </div>
-                )}
-
-                <div className="settleActions">
-                  {s.status === "pending" && (
-                    <>
-                      {s.id && (
-                        <Link
-                          href={`/trips/${tripId}/pay/${s.id}`}
-                          className="btn btnPrimary"
-                          style={{ fontSize: 13, padding: "10px 18px" }}
+                {/* Expanded QR panel */}
+                {isExpanded && (
+                  <div className="settlePayPanel">
+                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                      {/* Fake QR box */}
+                      <div
+                        style={{
+                          width: 110,
+                          height: 110,
+                          borderRadius: 16,
+                          padding: 8,
+                          background: "white",
+                          display: "grid",
+                          placeItems: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <FakeQR />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontSize: 10,
+                            fontWeight: 700,
+                            letterSpacing: ".18em",
+                            textTransform: "uppercase",
+                            color: "var(--fg-3)",
+                          }}
                         >
-                          <CreditCard size={15} />
-                          Pay {formatMoney(s.amount, currency)}
-                        </Link>
-                      )}
+                          Pay to
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            fontWeight: 700,
+                            fontSize: 18,
+                            color: "var(--fg-1)",
+                            marginTop: 2,
+                          }}
+                        >
+                          {to?.name || "?"}
+                        </div>
+                        {to?.upi_id && (
+                          <div
+                            style={{
+                              fontFamily: "var(--font-mono)",
+                              fontSize: 12,
+                              color: "var(--fg-2)",
+                              marginTop: 6,
+                              wordBreak: "break-all",
+                            }}
+                          >
+                            {to.upi_id}
+                          </div>
+                        )}
+                        <div style={{ display: "flex", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+                          <span className="chip info" style={{ fontSize: 11, padding: "4px 9px" }}>UPI QR</span>
+                          <span className="chip" style={{ fontSize: 11, padding: "4px 9px" }}>GPay · PhonePe</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                      {/* Pay now aurora button */}
                       <button
-                        className="btn btnGlass"
-                        style={{ fontSize: 13, padding: "10px 18px" }}
+                        className="btn btnPrimary"
+                        style={{ flex: 1 }}
                         onClick={() => markPaid(s)}
                         type="button"
                       >
-                        <Check size={15} />
-                        Mark Paid
+                        Pay now
                       </button>
-                    </>
-                  )}
-                  {s.status === "paid_by_sender" && (
-                    <button
-                      className="btn btnPrimary"
-                      style={{ fontSize: 13, padding: "10px 18px" }}
-                      onClick={() => confirmReceived(s)}
-                      type="button"
-                    >
-                      <Check size={15} />
-                      Confirm Received
-                    </button>
-                  )}
-                  {s.status === "confirmed_by_receiver" && (
-                    <span className="chip positive">Settled ✓</span>
-                  )}
-                </div>
+                      {/* Paid ghost button */}
+                      {s.status === "paid_by_sender" && (
+                        <button
+                          className="btn btnGlass"
+                          onClick={() => confirmReceived(s)}
+                          type="button"
+                        >
+                          Confirm received
+                        </button>
+                      )}
+                      {s.status !== "paid_by_sender" && (
+                        <button
+                          className="btn btnGlass"
+                          onClick={() => markPaid(s)}
+                          type="button"
+                        >
+                          Paid
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
